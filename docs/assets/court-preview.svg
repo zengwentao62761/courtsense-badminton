@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" role="img" aria-labelledby="title desc">
+<title id="title">CourtSense nominal court geometry</title>
+<desc id="desc">Geometric diagram only. No player measurements, camera calibration or shuttle trajectories.</desc>
+<rect width="1000" height="660" rx="20" fill="#102b30"/>
+<g font-family="sans-serif" fill="#eaf7f0">
+<text x="45" y="49" font-size="25">COURTSENSE / COURT GEOMETRY</text>
+<text x="45" y="78" font-size="13" fill="#a7d2c6">NOMINAL DIAGRAM - NOT A CALIBRATION</text>
+<rect x="95" y="140" width="804" height="366" fill="#20594e"/>
+<line id="near_baseline" x1="95.00" y1="140.00" x2="95.00" y2="506.00" stroke="#effbf4" stroke-width="2"/>
+<line id="far_baseline" x1="899.00" y1="140.00" x2="899.00" y2="506.00" stroke="#effbf4" stroke-width="2"/>
+<line id="left_doubles" x1="95.00" y1="140.00" x2="899.00" y2="140.00" stroke="#effbf4" stroke-width="2"/>
+<line id="right_doubles" x1="95.00" y1="506.00" x2="899.00" y2="506.00" stroke="#effbf4" stroke-width="2"/>
+<line id="left_singles" x1="95.00" y1="167.60" x2="899.00" y2="167.60" stroke="#effbf4" stroke-width="2"/>
+<line id="right_singles" x1="95.00" y1="478.40" x2="899.00" y2="478.40" stroke="#effbf4" stroke-width="2"/>
+<line id="near_short_service" x1="378.20" y1="140.00" x2="378.20" y2="506.00" stroke="#effbf4" stroke-width="2"/>
+<line id="far_short_service" x1="615.80" y1="140.00" x2="615.80" y2="506.00" stroke="#effbf4" stroke-width="2"/>
+<line id="near_long_doubles" x1="140.60" y1="140.00" x2="140.60" y2="506.00" stroke="#effbf4" stroke-width="2"/>
+<line id="far_long_doubles" x1="853.40" y1="140.00" x2="853.40" y2="506.00" stroke="#effbf4" stroke-width="2"/>
+<line id="near_center" x1="95.00" y1="323.00" x2="378.20" y2="323.00" stroke="#effbf4" stroke-width="2"/>
+<line id="far_center" x1="615.80" y1="323.00" x2="899.00" y2="323.00" stroke="#effbf4" stroke-width="2"/>
+<line id="net" x1="497.00" y1="140.00" x2="497.00" y2="506.00" stroke="#ffcb77" stroke-width="3" stroke-dasharray="9 6"/>
+<text x="430" y="124" font-size="15">13.40 m nominal</text>
+<text x="95" y="538" font-size="14">Doubles width 6.10 m / singles width 5.18 m</text>
+<text x="95" y="565" font-size="14" fill="#ffcb77">Dashed amber: net ground projection</text>
+<text x="45" y="607" font-size="13" fill="#a7d2c6">No measured positions. No speed estimates. No automatic line matching.</text>
+<text x="45" y="630" font-size="12" fill="#a7d2c6">Line-edge conventions must be resolved before metric calibration.</text>
+</g></svg>
