@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>羽境 CourtSense · 训练观察台</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23112c3e'/%3E%3Ctext x='5' y='29' font-size='28' fill='%237be1d0'%3E羽%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="羽境 CourtSense 首页"
+        ><span class="brand-mark" aria-hidden="true">羽</span
+        ><span
+          >羽境 <b>CourtSense</b><small>让每一次训练，看得更清楚</small></span
+        ></a
+      >
+      <div class="top-status">
+        <span id="status-dot" class="status-dot"></span
+        ><span id="connection" role="status">正在连接工作台</span>
+      </div>
+    </header>
+    <main>
+      <div class="page-heading">
+        <div>
+          <p class="section-kicker">训练观察台</p>
+          <h1>看见动作，留住依据。</h1>
+          <p class="intro">从真实画面开始，观察可见关节与二维动作变化。</p>
+        </div>
+        <div class="toolbar">
+          <button id="refresh" type="button">立即刷新</button
+          ><button
+            id="pause"
+            class="primary"
+            type="button"
+            aria-pressed="false"
+          >
+            暂停刷新
+          </button>
+        </div>
+      </div>
+
+      <section class="source-strip" aria-label="当前来源">
+        <div>
+          <span>数据来源</span><strong id="source-label">等待来源</strong>
+        </div>
+        <div>
+          <span>接入方式</span><strong id="source-kind">默认 RDK 服务</strong>
+        </div>
+        <div><span>运行平台</span><strong id="platform">待确认</strong></div>
+        <div><span>最后读取</span><strong id="updated">尚未读取</strong></div>
+      </section>
+      <div id="notice" class="notice" role="status">
+        正在读取 /api/state。连接后显示实际观察，不加载演示数据。
+      </div>
+
+      <div class="workspace">
+        <section class="video-panel panel" aria-labelledby="video-heading">
+          <div class="panel-heading">
+            <div>
+              <h2 id="video-heading">视频观察</h2>
+              <p id="frame-meta">等待首个处理帧</p>
+            </div>
+            <div class="segmented" aria-label="画面选择">
+              <button id="processed-view" class="selected" aria-pressed="true">
+                处理图</button
+              ><button id="original-view" aria-pressed="false" disabled>
+                原视频
+              </button>
+            </div>
+          </div>
+          <div class="video-stage" id="video-stage">
+            <div class="empty-state" id="frame-empty">
+              <span class="camera-symbol" aria-hidden="true">▣</span>
+              <h3>等待真实视频画面</h3>
+              <p>
+                默认读取已配置的 RDK 服务。<br />也可通过本地视频模式启动工作台。
+              </p>
+            </div>
+            <div id="processed-wrap" hidden>
+              <img id="frame" alt="最近一帧真实处理画面" /><canvas
+                id="pose-overlay"
+                aria-label="有效人体关键点叠加"
+              ></canvas>
+            </div>
+            <video id="original" controls preload="metadata" hidden></video
+            ><span id="frame-tag" class="frame-tag" hidden>最近处理帧</span>
+          </div>
+          <div class="video-footer">
+            <label
+              ><input id="show-pose" type="checkbox" checked />
+               附加关节点图层（不修改原图）</label
+            ><span id="video-note">处理帧按工作台读取频率更新</span>
+          </div>
+          <div class="metrics" aria-label="当前观察摘要">
+            <div>
+              <span>已处理帧</span><strong id="processed-count">—</strong>
+            </div>
+            <div>
+              <span>当前检测人数</span><strong id="people-count">—</strong>
+            </div>
+            <div><span>源视频时间</span><strong id="video-time">—</strong></div>
+            <div><span>处理用时</span><strong id="elapsed">—</strong></div>
+          </div>
+        </section>
+
+        <section class="court-panel panel" aria-labelledby="court-heading">
+          <div class="panel-heading">
+            <div>
+              <h2 id="court-heading">球场空间预览</h2>
+              <p>标准双打球场 · 13.40 × 6.10 m</p>
+            </div>
+            <span class="label-tag">几何示意</span>
+          </div>
+          <canvas
+            id="court"
+            tabindex="0"
+            role="img"
+            aria-label="可旋转标准羽毛球场示意；拖动或方向键调整，Home键重置"
+          ></canvas>
+          <div class="court-controls">
+            <label for="court-angle"
+              >视角
+              <input
+                id="court-angle"
+                type="range"
+                min="-180"
+                max="180"
+                value="-28" /></label
+            ><button id="reset-court">重置视角</button>
+          </div>
+          <p class="court-hint">拖动旋转 · 方向键调整 · Home 重置</p>
+          <div class="boundary-note">
+            <strong>等待真实球场标定</strong>
+            <p>
+              仅展示名义球场结构，不含球员定位或空中球迹。图像足踝点不会映射到此球场。
+            </p>
+          </div>
+          <div class="future-metrics">
+            <div><span>球速</span><strong>待接入</strong></div>
+            <div><span>扣杀统计</span><strong>待接入</strong></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="analysis-grid">
+        <section class="panel angles-panel" aria-labelledby="angles-heading">
+          <div class="panel-heading">
+            <div>
+              <h2 id="angles-heading">关节角观察</h2>
+              <p>当前帧二维投影角度，不代表动作评分</p>
+            </div>
+          </div>
+          <label class="person-select" for="person"
+            >检测对象
+            <select id="person">
+              <option>暂无检测</option>
+            </select></label
+          >
+          <div id="angles" class="angles"></div>
+          <div class="sample-line" id="keypoint-count">有效关节点：—</div>
+          <details>
+            <summary>查看当前关键点</summary>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>关节</th>
+                    <th>图像 x / y</th>
+                    <th>置信度</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody id="keypoints">
+                  <tr>
+                    <td colspan="4">等待观察数据</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </section>
+
+        <section
+          class="panel distribution-panel"
+          aria-labelledby="distribution-heading"
+        >
+          <div class="panel-heading">
+            <div>
+              <h2 id="distribution-heading">图像足踝分布</h2>
+              <p>按各帧宽高归一化的有效足踝采样</p>
+            </div>
+          </div>
+          <canvas
+            id="distribution"
+            role="img"
+            aria-label="图像足踝点分布，横纵坐标为零到一的图像归一化位置"
+          ></canvas>
+          <p id="ankle-meta" class="sample-line">尚无有效足踝采样</p>
+          <p class="fine-print">
+            来自已处理帧，最多显示最近 1000
+            点。不是球场跑位图、运动距离或时间加权热图。
+          </p>
+        </section>
+
+        <section class="panel report-panel" aria-labelledby="report-heading">
+          <div class="panel-heading">
+            <div>
+              <h2 id="report-heading">本次观察报告</h2>
+              <p>保留来源与样本，支持离线复核</p>
+            </div>
+          </div>
+          <dl class="report-stats">
+            <div>
+              <dt>有人检出的帧</dt>
+              <dd id="frames-with-people">—</dd>
+            </div>
+            <div>
+              <dt>累计人数观察</dt>
+              <dd id="observations">—</dd>
+            </div>
+            <div>
+              <dt>会话编号</dt>
+              <dd id="session">—</dd>
+            </div>
+            <div>
+              <dt>图像空间</dt>
+              <dd id="image-space">—</dd>
+            </div>
+          </dl>
+          <p class="fine-print">
+            累计人数观察包含同一人的多帧检测，不等于独立运动员数。报告只汇总真实样本，不提供专业评分。
+          </p>
+          <div class="report-actions">
+            <button id="download-html" class="primary" disabled>
+              下载 HTML 报告</button
+            ><button id="download-json" disabled>JSON 数据</button>
+          </div>
+          <p id="report-message" class="sample-line" role="status">
+            报告将在处理完成后开放下载
+          </p>
+        </section>
+      </div>
+      <footer>
+        <span>羽境 CourtSense</span><span>真实观察 / 二维姿态 / 来源可追溯</span
+        ><span>未标定 · 不输出米制定位与球速</span>
+      </footer>
+    </main>
+  </body>
+</html>

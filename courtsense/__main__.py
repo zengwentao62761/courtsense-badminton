@@ -2,12 +2,16 @@
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from .court import nominal_court, render_svg
 
 
 def main():
+    if len(sys.argv) == 1 or sys.argv[1] == 'monitor':
+        from .monitor import main as monitor_main
+        return monitor_main(sys.argv[2:] if len(sys.argv) > 1 else [])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True,
                         help='A NEW directory; existing paths are never overwritten.')

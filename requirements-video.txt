@@ -1,0 +1,5 @@
+# Optional local video pose adapter. Models must be provided explicitly.
+# Ultralytics code/models have their own AGPL-3.0 / enterprise licensing terms.
+numpy>=1.24,<3
+opencv-python-headless==4.11.0.86
+ultralytics==8.3.228
