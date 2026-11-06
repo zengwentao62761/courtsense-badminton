@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "mode": "offline_development",
+  "source_name": "synthetic-development-example-no-real-video",
+  "synthetic": true,
+  "image_space": {"id": "synthetic-space", "width": 1280, "height": 720, "service_instance_id": "offline"},
+  "calibration": {
+    "input_space": "undistorted_pixels",
+    "points": [
+      {"pixel": [100, 600], "court_m": [0, 0]},
+      {"pixel": [1100, 600], "court_m": [6.1, 0]},
+      {"pixel": [1000, 100], "court_m": [6.1, 13.4]},
+      {"pixel": [200, 100], "court_m": [0, 13.4]}
+    ]
+  },
+  "player_points": [
+    {"t_s": 0, "player_id": "synthetic-p1", "pixel": [600, 550], "contact_confirmed": true},
+    {"t_s": 0.5, "player_id": "synthetic-p1", "pixel": [620, 500], "contact_confirmed": false},
+    {"t_s": 1, "player_id": "synthetic-p1", "pixel": [650, 480], "contact_confirmed": true}
+  ],
+  "shuttle_points": [
+    {"t_s": 0, "track_id": "synthetic-s1", "pixel": [600, 100], "world3d_m": [3, 5, 3], "world3d_source": "synthetic fixture; not measured or reconstructed"},
+    {"t_s": 0.1, "track_id": "synthetic-s1", "pixel": [620, 200], "world3d_m": [3, 6, 2], "world3d_source": "synthetic fixture; not measured or reconstructed"},
+    {"t_s": 0.2, "track_id": "synthetic-s1", "pixel": null},
+    {"t_s": 0.3, "track_id": "synthetic-s1", "pixel": [640, 400]}
+  ],
+  "events": [
+    {"event_id": "synthetic-event-1", "t_s": 0.1, "type": "smash", "status": "confirmed", "source": "synthetic manual example"},
+    {"event_id": "synthetic-event-2", "t_s": 0.3, "type": "smash", "status": "candidate", "source": "synthetic manual example"}
+  ]
+}

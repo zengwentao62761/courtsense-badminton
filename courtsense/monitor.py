@@ -3,6 +3,7 @@ import argparse
 import copy
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import ipaddress
 import mimetypes
 from pathlib import Path
 import re
@@ -12,6 +13,7 @@ from urllib.parse import parse_qs, urlsplit
 import uuid
 
 from .report import ObservationSummary, write_report
+from .analysis import analyze, current_binding, LIMITATIONS
 
 
 class MonitorStore:
@@ -20,6 +22,7 @@ class MonitorStore:
         self.video_path = Path(video_path).resolve() if video_path else None
         self.lock = threading.Lock()
         self.jpeg = None
+        self.analysis = {'status': 'empty', 'data': None, 'result': None}
         self.state = {'session_id': uuid.uuid4().hex, 'status': 'waiting',
             'source': {'kind': 'rdk', 'label': 'Waiting for RDK service', 'platform': 'unverified_host'},
             'progress': {}, 'latest': None, 'summary': {}, 'errors': [],
@@ -29,6 +32,10 @@ class MonitorStore:
 
     def update(self, state, jpeg=None):
         with self.lock:
+            if (self.analysis['status'] == 'ready' and
+                    current_binding(state) != current_binding(self.state)):
+                self.analysis['status'] = 'invalidated'
+                self.analysis['result'] = None
             self.state = copy.deepcopy(state)
             if jpeg is not None:
                 self.jpeg = jpeg
@@ -36,6 +43,32 @@ class MonitorStore:
     def snapshot(self):
         with self.lock:
             return copy.deepcopy(self.state), self.jpeg
+
+    def analysis_snapshot(self):
+        with self.lock:
+            return self._analysis_snapshot()
+
+    def _analysis_snapshot(self):
+        return dict(copy.deepcopy(self.analysis), binding=current_binding(self.state), limitations=LIMITATIONS[:])
+
+    def replace_analysis(self, payload, reset=False):
+        with self.lock:
+            result = None if reset else analyze(payload, current_binding(self.state))
+            replacement = {'status': 'empty' if reset else 'ready',
+                           'data': None if reset else copy.deepcopy(payload), 'result': result}
+            # One immutable file per successful replacement/reset; report.json remains untouched.
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+            path = self.output_dir / ('analysis-' + uuid.uuid4().hex + '.json')
+            record = dict(replacement, binding=current_binding(self.state), limitations=LIMITATIONS[:],
+                          saved_at_unix_s=time.time())
+            temporary = path.with_suffix('.tmp')
+            try:
+                temporary.write_text(json.dumps(record,ensure_ascii=False,allow_nan=False), encoding='utf-8')
+                temporary.replace(path)
+            finally:
+                temporary.unlink(missing_ok=True)
+            self.analysis = replacement
+            return self._analysis_snapshot()
 
 
 def make_server(store, host, port):
@@ -58,6 +91,8 @@ def make_server(store, host, port):
 
         def do_GET(self):
             url = urlsplit(self.path)
+            if url.path == '/api/analysis':
+                return self.send(json.dumps(store.analysis_snapshot(), ensure_ascii=False, allow_nan=False).encode(), 'application/json; charset=utf-8')
             if url.path == '/api/state':
                 state, _ = store.snapshot()
                 return self.send(json.dumps(state, ensure_ascii=False, allow_nan=False).encode(), 'application/json; charset=utf-8')
@@ -87,6 +122,53 @@ def make_server(store, host, port):
                 path = web / assets[url.path]
                 return self.send(path.read_bytes(), (mimetypes.guess_type(str(path))[0] or 'application/octet-stream') + '; charset=utf-8')
             return self.send(b'Not found', 'text/plain', 404)
+
+        def do_POST(self):
+            def reply(value, status=200):
+                return self.send(json.dumps(value, ensure_ascii=False, allow_nan=False).encode(), 'application/json; charset=utf-8', status)
+            if urlsplit(self.path).path not in ('/api/analysis','/api/analysis/reset'):
+                return reply({'error':'Not found'},404)
+            try:
+                if not ipaddress.ip_address(self.client_address[0]).is_loopback:
+                    return reply({'error':'Analysis writes require loopback access'},403)
+                host = self.headers.get('Host','')
+                parsed_host = urlsplit('http://' + host)
+                if parsed_host.hostname not in ('127.0.0.1','localhost','::1') or parsed_host.port != self.server.server_port:
+                    return reply({'error':'Invalid local Host'},403)
+                origin = self.headers.get('Origin')
+                if origin and origin != 'http://' + host:
+                    return reply({'error':'Cross-origin write rejected'},403)
+                if self.headers.get('Sec-Fetch-Site') not in (None,'same-origin','none'):
+                    return reply({'error':'Cross-site write rejected'},403)
+                if self.headers.get('Transfer-Encoding'):
+                    return reply({'error':'Transfer-Encoding unsupported'},400)
+                length = self.headers.get('Content-Length')
+                if length is None or not length.isdecimal():
+                    return reply({'error':'Content-Length required'},411)
+                length = int(length)
+                if length > 1048576:
+                    return reply({'error':'JSON body exceeds 1 MiB'},413)
+                if self.headers.get('Content-Type','').split(';')[0].strip() != 'application/json':
+                    return reply({'error':'Expected application/json'},415)
+                def reject_constant(value):
+                    raise ValueError('Nonfinite JSON number')
+                def unique_object(pairs):
+                    result = {}
+                    for key,value in pairs:
+                        if key in result:
+                            raise ValueError('Duplicate JSON key')
+                        result[key] = value
+                    return result
+                payload = json.loads(self.rfile.read(length).decode('utf-8'), parse_constant=reject_constant,
+                                     object_pairs_hook=unique_object)
+                reset = urlsplit(self.path).path.endswith('/reset')
+                if reset and payload != {}:
+                    raise ValueError('Reset body must be {}')
+                return reply(store.replace_analysis(payload,reset=reset))
+            except (ValueError, UnicodeError, RecursionError) as exc:
+                return reply({'error':str(exc)},400)
+            except OSError:
+                return reply({'error':'Could not persist analysis; previous data retained'},500)
 
         def video(self):
             path = store.video_path

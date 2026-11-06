@@ -1,69 +1,13 @@
 <!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light" />
-    <title>羽境 CourtSense · 训练观察台</title>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23112c3e'/%3E%3Ctext x='5' y='29' font-size='28' fill='%237be1d0'%3E羽%3C/text%3E%3C/svg%3E"
-    />
-    <link rel="stylesheet" href="/assets/style.css" />
-    <script src="/assets/app.js" defer></script>
-  </head>
-  <body>
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="羽境 CourtSense 首页"
-        ><span class="brand-mark" aria-hidden="true">羽</span
-        ><span
-          >羽境 <b>CourtSense</b><small>让每一次训练，看得更清楚</small></span
-        ></a
-      >
-      <div class="top-status">
-        <span id="status-dot" class="status-dot"></span
-        ><span id="connection" role="status">正在连接工作台</span>
-      </div>
-    </header>
-    <main>
-      <div class="page-heading">
-        <div>
-          <p class="section-kicker">训练观察台</p>
-          <h1>看见动作，留住依据。</h1>
-          <p class="intro">从真实画面开始，观察可见关节与二维动作变化。</p>
-        </div>
-        <div class="toolbar">
-          <button id="refresh" type="button">立即刷新</button
-          ><button
-            id="pause"
-            class="primary"
-            type="button"
-            aria-pressed="false"
-          >
-            暂停刷新
-          </button>
-        </div>
-      </div>
-
-      <section class="source-strip" aria-label="当前来源">
-        <div>
-          <span>数据来源</span><strong id="source-label">等待来源</strong>
-        </div>
-        <div>
-          <span>接入方式</span><strong id="source-kind">默认 RDK 服务</strong>
-        </div>
-        <div><span>运行平台</span><strong id="platform">待确认</strong></div>
-        <div><span>最后读取</span><strong id="updated">尚未读取</strong></div>
-      </section>
-      <div id="notice" class="notice" role="status">
-        正在读取 /api/state。连接后显示实际观察，不加载演示数据。
-      </div>
-
-      <div class="workspace">
-        <section class="video-panel panel" aria-labelledby="video-heading">
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>羽境 CourtSense · 训练工作台</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ee6b2f'/%3E%3Cpath d='M8 8h16L8 24h16' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E"><link rel="stylesheet" href="/assets/style.css"><script src="/assets/app.js" defer></script></head>
+<body><aside class="sidebar"><a class="brand" href="/" aria-label="羽境 CourtSense 首页"><span class="brand-mark" aria-hidden="true">羽</span><span>羽境 <b>CourtSense</b><small>羽毛球训练工作台</small></span></a><nav aria-label="工作区"><button data-workspace="overview" class="active" aria-current="page"><span aria-hidden="true">▦</span>训练概览</button><button data-workspace="movement"><span aria-hidden="true">⌖</span>标定与跑位</button><button data-workspace="shuttle"><span aria-hidden="true">↗</span>球迹与击球</button><button data-workspace="reports"><span aria-hidden="true">▤</span>报告与设备</button></nav><div class="sidebar-bottom"><span class="edge-mark">RDK</span><strong>边缘采集工作台</strong><p>采集 · 观察 · 复核</p><small>设备与服务状态以实际回传为准</small></div></aside>
+<main data-workspace="overview"><header class="topbar"><div class="breadcrumb">训练工作台 <span>/</span> <strong id="workspace-label">训练概览</strong></div><div class="top-status"><span id="status-dot" class="status-dot"></span><span id="connection" role="status">正在连接</span></div></header><div class="page-heading"><div><h1 id="workspace-title">训练概览</h1><p id="workspace-description">从采集画面到球场空间，复核每一次观察。</p></div><div class="toolbar"><button id="refresh">立即刷新</button><button id="pause" class="primary" aria-pressed="false">暂停刷新</button></div></div>
+<section class="source-strip" aria-label="当前来源"><div><span>数据来源</span><strong id="source-label">等待来源</strong></div><div><span>接入方式</span><strong id="source-kind">默认 RDK 服务</strong></div><div><span>运行平台</span><strong id="platform">待确认</strong></div><div><span>最后读取</span><strong id="updated">尚未读取</strong></div></section><div id="notice" class="notice" role="status">正在读取真实观察数据。</div>
+<p id="analysis-scope" class="analysis-scope" data-views="overview movement shuttle" hidden></p><div class="domain-strip" data-views="overview movement shuttle"><div><span>球场标定</span><strong id="calibration-value">未标定</strong><small id="calibration-detail">需要去畸变像素点与米制点对</small></div><div><span>接地跑位采样</span><strong id="trail-value">—</strong><small>仅接地确认点映射到球场</small></div><div><span>扣杀确认 / 候选</span><strong id="smash-value">— / —</strong><small>等待事件分析或人工确认</small></div><div><span>球速估计</span><strong id="speed-value">—</strong><small id="speed-detail">像素速度与有条件三维估计分开记录</small></div></div>
+<div class="workspace" data-views="overview movement shuttle">        <section class="video-panel panel" aria-labelledby="video-heading">
           <div class="panel-heading">
             <div>
-              <h2 id="video-heading">视频观察</h2>
+              <h2 id="video-heading">采集画面</h2>
               <p id="frame-meta">等待首个处理帧</p>
             </div>
             <div class="segmented" aria-label="画面选择">
@@ -112,10 +56,10 @@
         <section class="court-panel panel" aria-labelledby="court-heading">
           <div class="panel-heading">
             <div>
-              <h2 id="court-heading">球场空间预览</h2>
+              <h2 id="court-heading">球场数字空间</h2>
               <p>标准双打球场 · 13.40 × 6.10 m</p>
             </div>
-            <span class="label-tag">几何示意</span>
+            <span id="court-data-tag" class="label-tag">标准几何</span>
           </div>
           <canvas
             id="court"
@@ -135,21 +79,11 @@
             ><button id="reset-court">重置视角</button>
           </div>
           <p class="court-hint">拖动旋转 · 方向键调整 · Home 重置</p>
-          <div class="boundary-note">
-            <strong>等待真实球场标定</strong>
-            <p>
-              仅展示名义球场结构，不含球员定位或空中球迹。图像足踝点不会映射到此球场。
-            </p>
-          </div>
-          <div class="future-metrics">
-            <div><span>球速</span><strong>待接入</strong></div>
-            <div><span>扣杀统计</span><strong>待接入</strong></div>
-          </div>
+          <div class="layer-controls"><label><input type="checkbox" id="show-trails" checked> 接地跑位</label><label><input type="checkbox" id="show-world" checked> 三维球迹</label></div>
+          <p id="court-analysis-note" class="fine-print">尚无标定与接地点，仅显示标准球场。</p>
         </section>
-      </div>
-
-      <div class="analysis-grid">
-        <section class="panel angles-panel" aria-labelledby="angles-heading">
+</div>
+<div class="analysis-grid" data-views="overview">        <section class="panel angles-panel" aria-labelledby="angles-heading">
           <div class="panel-heading">
             <div>
               <h2 id="angles-heading">关节角观察</h2>
@@ -208,7 +142,9 @@
           </p>
         </section>
 
-        <section class="panel report-panel" aria-labelledby="report-heading">
+</div>
+<section class="panel analysis-panel" data-views="movement shuttle"><div class="panel-heading"><div><h2 id="analysis-title">分析数据与标定</h2><p>手工点对、接地点、球迹与击球事件的可复核输入</p></div><span id="analysis-badge" class="label-tag">无分析数据</span></div><div class="analysis-layout"><div><div class="analysis-toolbar"><button id="import-analysis" class="primary">应用 JSON</button><label class="file-button">导入文件<input type="file" id="analysis-file" accept=".json,application/json"></label><button id="live-analysis-template" disabled>当前来源模板</button><button id="export-analysis" disabled>导出输入</button><button id="export-analysis-result" disabled>导出结果</button><button id="sample-analysis">预览合成样例</button><button id="reset-analysis">清除分析</button></div><label for="analysis-input" class="editor-label">分析 JSON / 标定点对</label><textarea id="analysis-input" spellcheck="false" rows="13" placeholder="导入分析文件，或点击预览合成样例以了解点对格式。"></textarea><p id="analysis-message" role="status" class="sample-line">尚未加载分析。合成样例仅在主动点击后载入。</p><details><summary>标定与速度的使用边界</summary><p class="fine-print">至少 4 组去畸变像素与球场米制点对；地面单应性仅用于接地确认点。空中羽毛球不使用地面单应性。像素速度以 px/s 表示；三维速度需显式三维重建坐标与来源说明。候选扣杀与已确认事件分别计数。</p></details></div><div class="trajectory-block"><div class="panel-heading"><h3>羽毛球图像轨迹</h3><label><input type="checkbox" id="show-shuttle" checked> 显示球迹</label></div><canvas id="trajectory" role="img" aria-label="独立图像空间中的羽毛球轨迹，离线数据不叠加真实帧"></canvas><p id="trajectory-note" class="fine-print">等待球迹输入；这是独立分析视图。</p><div id="event-list" class="event-list">尚无击球事件</div></div></div></section>
+<div class="report-layout" data-views="reports">        <section class="panel report-panel" aria-labelledby="report-heading">
           <div class="panel-heading">
             <div>
               <h2 id="report-heading">本次观察报告</h2>
@@ -245,11 +181,5 @@
             报告将在处理完成后开放下载
           </p>
         </section>
-      </div>
-      <footer>
-        <span>羽境 CourtSense</span><span>真实观察 / 二维姿态 / 来源可追溯</span
-        ><span>未标定 · 不输出米制定位与球速</span>
-      </footer>
-    </main>
-  </body>
-</html>
+<section class="panel devices-panel"><div class="panel-heading"><div><h2>设备与扩展</h2><p>RDK 边缘采集与运动硬件接入</p></div></div><div class="device-row"><span class="device-symbol">R</span><div><strong>RDK 视觉采集</strong><p>当前采集状态见顶部来源信息</p></div><span class="label-tag">读取状态</span></div><div class="device-row"><span class="device-symbol">↔</span><div><strong>移动底盘</strong><p>定位与运动控制扩展</p></div><span class="label-tag">未接入</span></div><div class="device-row"><span class="device-symbol">⊕</span><div><strong>云台</strong><p>相机朝向与跟踪扩展</p></div><span class="label-tag">未接入</span></div><div class="device-row"><span class="device-symbol">⌁</span><div><strong>球拍 IMU</strong><p>击球时序与姿态扩展</p></div><span class="label-tag">未接入</span></div><p class="fine-print">扩展入口保留。当前未读取这些设备的遥测或控制指令。</p></section></div>
+<footer><span>羽境 CourtSense</span><span>真实来源可追溯 · 分析结果保留适用条件</span><span>移动底盘 / 云台 / 球拍 IMU：未接入</span></footer></main></body></html>
