@@ -1,6 +1,6 @@
 # 数据与坐标约定草案 v0.1
 
-状态：供后续实现采用的设计约定，当前没有采集或API实现。本次可运行示例只输出独立的名义球场模板JSON。
+状态：供标定、设备与事件扩展采用的设计草案。现有P0.1.0观察接口见迁移和运行指南；本页未来字段尚未作为API实现。
 
 ## 坐标与时间
 
@@ -53,3 +53,19 @@
 ## 热图
 
 按可信位置的实际停留时间累计；有效时间、缺失时间与估计补全时间分开。固定地图区域划分和版本，防止两次训练的不同网格产生不可比热图。
+
+## 三设备记录扩展（设计，尚未实现）
+
+| 记录 | 拟保存字段及语义 |
+| --- | --- |
+| 共用头 | schema_version、session_id、device_id、sequence、source_clock_id、sample_time、received_time、timestamp_semantics、source_version |
+| 时钟映射 | mapping_id、源与目标时钟、偏移/漂移模型、适用时间区间、独立对齐残差；不得跨失效区间直接比较 |
+| 底盘 | pose、coordinate_frame、odometry_source、transform_version、motion_state、stop_feedback、visual_relocalization_status |
+| 云台 | axis_definition、requested_angle、measured_angle、angle_unit、settled、camera_pose_version、calibration_id |
+| IMU | accel、gyro、各自单位/量程、axis_definition、mount_orientation、clock_mapping_id、packet_loss；候选事件另记 |
+| 命令与反馈 | command_id、session_id、issued_time、deadline、expected_state、ack_state、actual_state、fault、stopped |
+| 训练事件 | event_id、task_id、候选/确认/拒判、时间窗口、video_frame_refs、imu_sample_refs、规则与标定版本 |
+
+空间变换需明确父/子坐标系、方向、单位和生效区间。IMU安装到球拍的变换不提供球拍绝对位置；底盘里程计与云台角度也不自动等于已验证的相机外参。相机或底盘移动后，旧标定不能默认继续有效。
+
+已接收、执行中、实际到位、故障分别记录；原始时间保留，映射时间另存。事件发生时间、判定时间和执行反馈时间独立，未确认或时钟失效的事件不进入精确时序评价。
